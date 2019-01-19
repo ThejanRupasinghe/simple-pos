@@ -2,7 +2,6 @@ package com.simplepos.backend.controllers;
 
 import com.simplepos.backend.models.User;
 import com.simplepos.backend.repository.UserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,26 +14,26 @@ public class UserController {
     private UserRepository userRepository;
 
     @PostMapping(path = "/add")
-    public @ResponseBody String addNewUser(@RequestParam String name, @RequestParam String email){
+    public @ResponseBody
+    String addNewUser(@RequestParam String name, @RequestParam String username, @RequestParam String password) {
         User user = new User();
         user.setName(name);
-        user.setEmail(email);
+        user.setUsername(username);
+        // TODO: 1/18/19 save encrypted password
         userRepository.save(user);
         return "Saved User";
     }
 
     @GetMapping(path = "/all")
-    public @ResponseBody Iterable<User> getAllUsers(){
+    public @ResponseBody
+    Iterable<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    @GetMapping(path = "/findName")
-    public @ResponseBody User findUserByName (@RequestParam String name){
-        return userRepository.findByName(name);
-    }
-
-    @GetMapping("/findId")
-    public @ResponseBody User findUserById (@RequestParam String id) {
-        return userRepository.findBy_id(new ObjectId(id));
+    @GetMapping(path = "/findUser")
+    public @ResponseBody
+    User findUserByName(@RequestParam String username) {
+        // TODO: 1/18/19 if not user is found
+        return userRepository.findByUsername(username).get();
     }
 }
