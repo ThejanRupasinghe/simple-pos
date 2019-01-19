@@ -1,9 +1,13 @@
 package com.simplepos.backend.security.details;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
+/**
+ * Wraps the sign up request
+ */
 public class SignUpDetails {
     @NotBlank
     @Size(min = 3, max = 50)
@@ -13,6 +17,7 @@ public class SignUpDetails {
     @Size(min = 3, max = 50)
     private String username;
 
+    @NotEmpty
     private Set<String> roles;
 
     @NotBlank

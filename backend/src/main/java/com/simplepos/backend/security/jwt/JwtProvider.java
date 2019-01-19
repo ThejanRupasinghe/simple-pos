@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+/**
+ * Provides JWT token generation and validation
+ */
 @Component
 @PropertySource("classpath:simplepos.properties")
 public class JwtProvider {
@@ -24,6 +27,12 @@ public class JwtProvider {
     @Value("${simplepos.jwt.expiration}")
     private int expiration;
 
+    /**
+     * Generates JWT token string
+     *
+     * @param authentication provided by AuthenticationManager in WebSecurityConfig
+     * @return
+     */
     public String generateJwtToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
@@ -36,6 +45,12 @@ public class JwtProvider {
                 .compact();
     }
 
+    /**
+     * Extracts username form JWT token
+     *
+     * @param token JWT token string
+     * @return
+     */
     String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
@@ -43,6 +58,12 @@ public class JwtProvider {
                 .getBody().getSubject();
     }
 
+    /**
+     * Validates the token with jwt.io api
+     *
+     * @param token JWT token string
+     * @return
+     */
     boolean validateJwtToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);

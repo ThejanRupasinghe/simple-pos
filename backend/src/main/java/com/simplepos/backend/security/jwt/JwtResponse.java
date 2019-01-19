@@ -1,5 +1,8 @@
 package com.simplepos.backend.security.jwt;
 
+/**
+ * Wraps the response body with JWT token for sign in request.
+ */
 public class JwtResponse {
     private String token;
     private String type = "Bearer";

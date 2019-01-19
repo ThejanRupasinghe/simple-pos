@@ -18,6 +18,9 @@ import java.io.IOException;
 
 import com.simplepos.backend.services.UserDetailsServiceImpl;
 
+/**
+ * Custom JWT filter for spring security filter chain
+ */
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthTokenFilter.class);
@@ -28,6 +31,15 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    /**
+     * Takes JWT token from request validates and authenticates the user and invokes the next filter
+     *
+     * @param request
+     * @param response
+     * @param filterChain spring filter chain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -46,12 +58,18 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            logger.error("Can NOT set user authentication -> Message: {}", e);
+            logger.error("JWT token error.", e);
         }
 
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Extract JWT token from the header.
+     *
+     * @param request HTTP Request
+     * @return If header is present: JWT token string, else: null
+     */
     private String getJwt(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 

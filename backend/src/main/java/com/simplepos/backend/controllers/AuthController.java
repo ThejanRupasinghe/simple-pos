@@ -1,14 +1,20 @@
 package com.simplepos.backend.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.simplepos.backend.models.Role;
 import com.simplepos.backend.models.User;
 import com.simplepos.backend.repository.UserRepository;
+import com.simplepos.backend.response.Response;
 import com.simplepos.backend.security.jwt.JwtProvider;
 import com.simplepos.backend.security.jwt.JwtResponse;
 import com.simplepos.backend.security.details.SignInDetails;
 import com.simplepos.backend.security.details.SignUpDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,8 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +35,8 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -39,7 +49,14 @@ public class AuthController {
     @Autowired
     JwtProvider jwtProvider;
 
-    @PostMapping("/signin")
+    /**
+     * Maps the sign in request.
+     *
+     * @param loginRequest wrapper SignInDetails for the login JSON body
+     * @param response
+     * @return
+     */
+    @PostMapping(path = "/signin", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody SignInDetails loginRequest,
                                               HttpServletResponse response) {
 
@@ -53,43 +70,66 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtProvider.generateJwtToken(authentication);
-        Cookie cookie = new Cookie("foo","bar");
+
+        // TODO: 1/19/19 set the JWT in browser cookie
+        Cookie cookie = new Cookie("foo", "bar");
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         cookie.setMaxAge(55464956);
-        response.addHeader("Access-Control-Allow-Credentials","true");
-        response.addHeader("Cache-Control", "cache, store, max-age=0, must-revalidate");
+        response.addHeader("Access-Control-Allow-Credentials", "true");
         response.addCookie(cookie);
+
+        logger.info("Authentication success. username - " + loginRequest.getUsername());
+
         return ResponseEntity.ok(new JwtResponse(jwt));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpDetails signUpRequest) {
+    /**
+     * Maps sign up request
+     *
+     * @param signUpRequest wrapper SignUpDetails for the sign up JSON body
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(path = "/signup", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpDetails signUpRequest, HttpServletRequest request) throws Exception {
+        //username already in database
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return new ResponseEntity<String>("Fail -> Username is already taken!",
-                    HttpStatus.BAD_REQUEST);
+            logger.error("Given username already exists. username - " + signUpRequest.getUsername());
+            Response response = new Response(new Date(), HttpServletResponse.SC_BAD_REQUEST, "Given username already exists.", "Existing User", request.getRequestURI());
+            return new ResponseEntity<>(response.toJsonString(), HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
+        //creates new user account
         User user = new User(signUpRequest.getName(), signUpRequest.getUsername(), encoder.encode(signUpRequest.getPassword()));
 
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
 
-        strRoles.forEach(role -> {
-            if("admin".equals(role)){
+        //adds roles to the account
+        for (String role : strRoles) {
+            if ("admin".equals(role)) {
                 roles.add(Role.ROLE_ADMIN);
-            } else if("user".equals(role)){
+            } else if ("user".equals(role)) {
                 roles.add(Role.ROLE_USER);
             } else {
-                throw new RuntimeException("Fail! -> Cause: User Role not find.");
+                //given user role not found in Role enum
+                logger.error("Invalid user role " + role);
+                Response response = new Response(new Date(),
+                        HttpServletResponse.SC_BAD_REQUEST,
+                        "Given user role not found.", "Invalid role", request.getRequestURI());
+                return new ResponseEntity<>(response.toJsonString(), HttpStatus.BAD_REQUEST);
             }
-
-        });
+        }
 
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.ok().body("User registered successfully!");
+        logger.info("User saved. username - " + user.getUsername() + ", roles - " + user.getRoles().toString());
+        Response response = new Response(new Date(),
+                HttpServletResponse.SC_OK,
+                "User saved successfully.", null, request.getRequestURI());
+        return new ResponseEntity<>(response.toJsonString(), HttpStatus.OK);
     }
 }

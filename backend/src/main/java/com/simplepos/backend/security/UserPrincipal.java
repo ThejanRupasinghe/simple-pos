@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Implements UserDetails in spring for custom user account
+ */
 public class UserPrincipal implements UserDetails {
     private String _id;
     private String name;
@@ -98,7 +101,7 @@ public class UserPrincipal implements UserDetails {
         this.authorities = authorities;
     }
 
-    // TODO: 1/18/19 try removing the method 
+    // TODO: 1/18/19 try removing this method
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
