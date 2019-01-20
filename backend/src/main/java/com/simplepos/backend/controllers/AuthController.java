@@ -1,17 +1,17 @@
 package com.simplepos.backend.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.simplepos.backend.details.ResponseDetails;
 import com.simplepos.backend.models.Role;
 import com.simplepos.backend.models.User;
 import com.simplepos.backend.repository.UserRepository;
-import com.simplepos.backend.response.Response;
 import com.simplepos.backend.security.jwt.JwtProvider;
 import com.simplepos.backend.security.jwt.JwtResponse;
-import com.simplepos.backend.security.details.SignInDetails;
-import com.simplepos.backend.security.details.SignUpDetails;
+import com.simplepos.backend.details.SignInDetails;
+import com.simplepos.backend.details.SignUpDetails;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -74,9 +74,7 @@ public class AuthController {
         // TODO: 1/19/19 set the JWT in browser cookie
         Cookie cookie = new Cookie("foo", "bar");
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setMaxAge(55464956);
-        response.addHeader("Access-Control-Allow-Credentials", "true");
+        cookie.setPath("/api");
         response.addCookie(cookie);
 
         logger.info("Authentication success. username - " + loginRequest.getUsername());
@@ -97,8 +95,8 @@ public class AuthController {
         //username already in database
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             logger.error("Given username already exists. username - " + signUpRequest.getUsername());
-            Response response = new Response(new Date(), HttpServletResponse.SC_BAD_REQUEST, "Given username already exists.", "Existing User", request.getRequestURI());
-            return new ResponseEntity<>(response.toJsonString(), HttpStatus.BAD_REQUEST);
+            ResponseDetails responseDetails = new ResponseDetails(new Date(), HttpServletResponse.SC_BAD_REQUEST, "Given username already exists.", "Existing User", request.getRequestURI());
+            return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.BAD_REQUEST);
         }
 
         //creates new user account
@@ -116,10 +114,10 @@ public class AuthController {
             } else {
                 //given user role not found in Role enum
                 logger.error("Invalid user role " + role);
-                Response response = new Response(new Date(),
+                ResponseDetails responseDetails = new ResponseDetails(new Date(),
                         HttpServletResponse.SC_BAD_REQUEST,
                         "Given user role not found.", "Invalid role", request.getRequestURI());
-                return new ResponseEntity<>(response.toJsonString(), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.BAD_REQUEST);
             }
         }
 
@@ -127,9 +125,9 @@ public class AuthController {
         userRepository.save(user);
 
         logger.info("User saved. username - " + user.getUsername() + ", roles - " + user.getRoles().toString());
-        Response response = new Response(new Date(),
+        ResponseDetails responseDetails = new ResponseDetails(new Date(),
                 HttpServletResponse.SC_OK,
                 "User saved successfully.", null, request.getRequestURI());
-        return new ResponseEntity<>(response.toJsonString(), HttpStatus.OK);
+        return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.OK);
     }
 }

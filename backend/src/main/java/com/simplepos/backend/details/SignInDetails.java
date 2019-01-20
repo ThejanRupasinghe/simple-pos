@@ -1,4 +1,4 @@
-package com.simplepos.backend.security.details;
+package com.simplepos.backend.details;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

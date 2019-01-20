@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Fried Rice-Chicken",
+    "unitPrice": 200.00,
+    "category": "MEALS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Fried Rice-Egg",
+    "unitPrice": 180.00,
+    "category": "MEALS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Koththu",
+    "unitPrice": 150.00,
+    "category": "MEALS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "String Hoppers (20)",
+    "unitPrice": 80.00,
+    "category": "MEALS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Roti",
+    "unitPrice": 40.00,
+    "category": "MEALS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Fish Bun",
+    "unitPrice": 50.00,
+    "category": "SHORTEATS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Egg Bun",
+    "unitPrice": 40.00,
+    "category": "SHORTEATS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Pastry",
+    "unitPrice": 60.00,
+    "category": "SHORTEATS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Doughnut",
+    "unitPrice": 70.00,
+    "category": "SHORTEATS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Chicken Role",
+    "unitPrice": 60.00,
+    "category": "SHORTEATS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Plain Tea",
+    "unitPrice": 20.00,
+    "category": "DRINKS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Milk Tea",
+    "unitPrice": 30.00,
+    "category": "DRINKS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Coffee",
+    "unitPrice": 30.00,
+    "category": "DRINKS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Milk Coffee",
+    "unitPrice": 40.00,
+    "category": "DRINKS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Orange Juice",
+    "unitPrice": 80.00,
+    "category": "DRINKS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Ice Cream-Vanilla",
+    "unitPrice": 60.00,
+    "category": "DESSERTS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name":"Ice Cream-Chocolate",
+    "unitPrice": 60.00,
+    "category": "DESSERTS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Fruit Salad",
+    "unitPrice": 70.00,
+    "category": "DESSERTS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Watalappan",
+    "unitPrice": 80.00,
+    "category": "DESSERTS",
+    "_class": "com.simplepos.backend.models.Item"
+  },
+  {
+    "name": "Pudding",
+    "unitPrice": 100.00,
+    "category": "DESSERTS",
+    "_class": "com.simplepos.backend.models.Item"
+  }
+]

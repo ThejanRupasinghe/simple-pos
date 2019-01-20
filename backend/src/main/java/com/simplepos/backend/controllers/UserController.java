@@ -11,6 +11,17 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @PostMapping(path = "/add")
+    public @ResponseBody
+    String addNewUser(@RequestParam String name, @RequestParam String username, @RequestParam String password) {
+        User user = new User();
+        user.setName(name);
+        user.setUsername(username);
+        // TODO: 1/18/19 save encrypted password
+        userRepository.save(user);
+        return "Saved User";
+    }
+
     @GetMapping(path = "/all")
     public @ResponseBody
     Iterable<User> getAllUsers() {

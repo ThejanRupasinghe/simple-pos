@@ -72,7 +72,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
      */
     private String getJwt(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
-
+        // TODO: 1/19/19 take token from cookie
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.replace("Bearer ", "");
         }

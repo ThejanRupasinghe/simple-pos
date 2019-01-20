@@ -1,4 +1,4 @@
-package com.simplepos.backend.response;
+package com.simplepos.backend.details;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,14 +9,14 @@ import java.util.Date;
 /**
  * Builds a custom response object for success and error messages.
  */
-public class Response {
+public class ResponseDetails {
     private Date timeStamp;
     private int status;
     private String message;
     private String error;
     private String path;
 
-    public Response(Date timeStamp, int status, String message, String error, String path) {
+    public ResponseDetails(Date timeStamp, int status, String message, String error, String path) {
         this.timeStamp = timeStamp;
         this.status = status;
         this.message = message;
@@ -65,7 +65,7 @@ public class Response {
     }
 
     /**
-     * Builds the JSON string of the Response object
+     * Builds the JSON string of the ResponseDetails object
      *
      * @return response JSON string
      * @throws JsonProcessingException writeValueAsString
