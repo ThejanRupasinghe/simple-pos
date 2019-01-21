@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Date;
 
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
@@ -49,7 +50,7 @@ public class OrderController {
         if (result.hasErrors()) {
             ResponseDetails responseDetails = new ResponseDetails(new Date(),
                     HttpServletResponse.SC_BAD_REQUEST,
-                    result.getAllErrors().toString(),"Invalid Order.", request.getRequestURI());
+                    result.getAllErrors().toString(), "Invalid Order.", request.getRequestURI());
             logger.error("Invalid Order. Item mismatch.");
 
             return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.BAD_REQUEST);
@@ -65,5 +66,16 @@ public class OrderController {
         return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.OK);
     }
 
-    // TODO: 1/20/19 implement getAll, getBy status
+    @GetMapping(path = "/all")
+    public Iterable<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    @GetMapping(path = "/bystatus")
+    public ArrayList<Order> getAllByStatus(String status){
+        return orderRepository.findAllByStatus(status);
+        // TODO: 1/21/19 if no orders are found [] is returned
+    }
+
+    // TODO: 1/21/19 update order, calculating total
 }

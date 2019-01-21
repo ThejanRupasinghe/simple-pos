@@ -1,15 +1,10 @@
 package com.simplepos.backend.models;
 
-import org.springframework.data.annotation.Id;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 public class OrderItem {
-    @Id
-    private String _id;
-
     @NotBlank
     private String name;
 
@@ -21,14 +16,6 @@ public class OrderItem {
     @NotNull
     @Positive
     private int count;
-
-    public String get_id() {
-        return _id;
-    }
-
-    public void set_id(String _id) {
-        this._id = _id;
-    }
 
     public String getName() {
         return name;

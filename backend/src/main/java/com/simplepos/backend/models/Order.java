@@ -3,7 +3,6 @@ package com.simplepos.backend.models;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -14,8 +13,7 @@ public class Order {
     @Id
     private String _id;
 
-    @NotBlank
-    private String status;
+    private Status status;
 
     @NotEmpty
     @Valid
@@ -33,11 +31,11 @@ public class Order {
         this._id = _id;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
