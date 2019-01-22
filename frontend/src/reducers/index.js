@@ -4,7 +4,7 @@ import itemReducer from './itemReducer';
 import orderReducer from './orderReducer';
 
 export default combineReducers({
-    item: itemReducer,
+    itemReducer: itemReducer,
     // auth: authReducer,
-    order: orderReducer
+    orderReducer: orderReducer
 });
