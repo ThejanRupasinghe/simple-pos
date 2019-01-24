@@ -1,7 +1,7 @@
 import React from 'react';
 import {Table, Container, Button} from "reactstrap";
 import {connect} from 'react-redux';
-import {getOrders} from "../actions/orderActions";
+import {getOrders, deleteOrder} from "../actions/orderActions";
 import PropTypes from 'prop-types';
 
 class OrderTable extends React.Component {
@@ -65,6 +65,7 @@ class OrderTable extends React.Component {
 
 OrderTable.propTypes = {
     getOrders: PropTypes.func.isRequired,
+    deleteOrder: PropTypes.func.isRequired,
     orderReducer: PropTypes.object.isRequired
 };
 
@@ -72,4 +73,6 @@ const mapStateToProps = (state) => ({
     orderReducer: state.orderReducer
 });
 
-export default connect(mapStateToProps, {getOrders})(OrderTable);
+export default connect(
+    mapStateToProps,
+    {getOrders, deleteOrder})(OrderTable);
