@@ -9,6 +9,7 @@ import {
     NavLink,
     Container
 } from 'reactstrap';
+import {isLoggedIn} from "../utils/authUtils";
 
 class AppNavBar extends React.Component {
     constructor(props) {
@@ -33,9 +34,12 @@ class AppNavBar extends React.Component {
                         <NavbarToggler onClick={this.toggle}/>
                         <Collapse isOpen={this.state.isOpen} navbar>
                             <Nav className="ml-auto" navbar>
-                                {/*TODO - sign in or sign out*/}
                                 <NavItem>
-                                    <NavLink href="/signin">Sign In</NavLink>
+                                    {isLoggedIn() ? (
+                                        <NavLink href="/signout">Sign Out</NavLink>
+                                    ) : (
+                                        <NavLink href="/signin">Sign In</NavLink>
+                                    )}
                                 </NavItem>
                             </Nav>
                         </Collapse>

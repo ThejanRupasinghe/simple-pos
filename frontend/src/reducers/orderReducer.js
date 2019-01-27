@@ -1,4 +1,4 @@
-import {GET_ORDERS, ADD_ORDER, DELETE_ORDER, UPDATE_ORDER} from "../actions/types";
+import {GET_ORDERS, ADD_ORDER, DELETE_ORDER, UPDATE_ORDER, ORDERS_LOADING} from "../actions/types";
 
 const initialState = {
     orders: [
@@ -15,6 +15,11 @@ export default function (state = initialState, action) {
         case GET_ORDERS:
             return {
                 ...state
+            };
+        case ORDERS_LOADING:
+            return {
+                ...state,
+                loading: true
             };
         default:
             return state;

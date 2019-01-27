@@ -8,7 +8,8 @@ import store from './store';
 
 import "bootstrap/dist/css/bootstrap.min.css"
 import './App.css';
-import LoginForm from "./components/LoginForm";
+import SignInForm from "./components/SignInForm";
+import {isLoggedIn} from "./utils/authUtils";
 
 class App extends React.Component {
     render() {
@@ -17,34 +18,30 @@ class App extends React.Component {
                 <BrowserRouter>
                     <div className="App">
                         <AppNavBar/>
-
-                        {/*Routing goes here*/}
-                        {/*<Switch>*/}
-                        {/*<Route exact path="/" render={() => (*/}
-                        {/*loggedIn ? (*/}
-                        {/*<Redirect to="/orders"/>*/}
-                        {/*) : (*/}
-                        {/*<Redirect to="/login"/>*/}
-                        {/*)*/}
-                        {/*)}/>*/}
-                        {/*<Route exact path="/orders" render={() => (*/}
-                        {/*loggedIn ? (*/}
-                        {/*<OrderView/>*/}
-                        {/*) : (*/}
-                        {/*<Redirect to="/login"/>*/}
-                        {/*)*/}
-                        {/*)}/>*/}
-                        {/*<Route exact path="/login" render={() => (*/}
-                        {/*loggedIn ? (*/}
-                        {/*<Redirect to="/orders"/>*/}
-                        {/*) : (*/}
-                        {/*<LoginForm/>*/}
-                        {/*)*/}
-                        {/*)}/>*/}
-                        {/*<Route component={PageNotFound} />*/}
-                        {/*</Switch>*/}
-
-                        <OrderTable/>
+                        <Switch>
+                            <Route exact path="/" render={() => (
+                                isLoggedIn() ? (
+                                    <Redirect to="/orders"/>
+                                ) : (
+                                    <Redirect to="/signin"/>
+                                )
+                            )}/>
+                            <Route exact path="/orders" render={() => (
+                                isLoggedIn() ? (
+                                    <OrderTable/>
+                                ) : (
+                                    <Redirect to="/signin"/>
+                                )
+                            )}/>
+                            <Route exact path="/signin" render={() => (
+                                isLoggedIn() ? (
+                                    <Redirect to="/orders"/>
+                                ) : (
+                                    <SignInForm/>
+                                )
+                            )}/>
+                            {/*<Route component={PageNotFound}/>*/}
+                        </Switch>
                     </div>
                 </BrowserRouter>
             </Provider>
