@@ -1,15 +1,15 @@
 import React from 'react';
-import {BrowserRouter, Switch, Redirect, Link, Route} from 'react-router-dom';
+import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
 import AppNavBar from './components/AppNavBar';
 import OrderTable from './components/OrderTable'
 
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 import store from './store';
 
 import "bootstrap/dist/css/bootstrap.min.css"
 import './App.css';
 import SignInForm from "./components/SignInForm";
-import {isLoggedIn} from "./utils/authUtils";
+import { isLoggedIn } from "./utils/authUtils";
 
 class App extends React.Component {
     render() {
@@ -17,29 +17,29 @@ class App extends React.Component {
             <Provider store={store}>
                 <BrowserRouter>
                     <div className="App">
-                        <AppNavBar/>
+                        <AppNavBar />
                         <Switch>
                             <Route exact path="/" render={() => (
                                 isLoggedIn() ? (
-                                    <Redirect to="/orders"/>
+                                    <Redirect to="/orders" />
                                 ) : (
-                                    <Redirect to="/signin"/>
+                                    <Redirect to="/signin" />
                                 )
-                            )}/>
+                            )} />
                             <Route exact path="/orders" render={() => (
                                 isLoggedIn() ? (
-                                    <OrderTable/>
+                                    <OrderTable />
                                 ) : (
-                                    <Redirect to="/signin"/>
+                                    <Redirect to="/signin" />
                                 )
-                            )}/>
+                            )} />
                             <Route exact path="/signin" render={() => (
                                 isLoggedIn() ? (
-                                    <Redirect to="/orders"/>
+                                    <Redirect to="/orders" />
                                 ) : (
-                                    <SignInForm/>
+                                    <SignInForm />
                                 )
-                            )}/>
+                            )} />
                             {/*<Route component={PageNotFound}/>*/}
                         </Switch>
                     </div>

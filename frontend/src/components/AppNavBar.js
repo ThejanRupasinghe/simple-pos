@@ -10,6 +10,10 @@ import {
     Container
 } from 'reactstrap';
 import {isLoggedIn} from "../utils/authUtils";
+import PropTypes from 'prop-types';
+import { withRouter } from "react-router";
+import {connect} from 'react-redux';
+import{signOutUser} from '../actions/authActions';
 
 class AppNavBar extends React.Component {
     constructor(props) {
@@ -36,7 +40,7 @@ class AppNavBar extends React.Component {
                             <Nav className="ml-auto" navbar>
                                 <NavItem>
                                     {isLoggedIn() ? (
-                                        <NavLink href="/signout">Sign Out</NavLink>
+                                        <NavLink onClick={this.props.signOutUser}>Sign Out</NavLink>
                                     ) : (
                                         <NavLink href="/signin">Sign In</NavLink>
                                     )}
@@ -50,4 +54,15 @@ class AppNavBar extends React.Component {
     }
 }
 
-export default AppNavBar;
+AppNavBar.propTypes = {
+    authReducer: PropTypes.object.isRequired,
+    signOutUser: PropTypes.func.isRequired
+};
+
+const mapStateToProps = (state) => ({
+    authReducer: state.authReducer
+});
+
+export default withRouter(connect(
+    mapStateToProps,
+    {signOutUser})(AppNavBar));

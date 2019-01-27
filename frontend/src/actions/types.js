@@ -7,3 +7,4 @@ export const GET_ORDERS = "GET_ORDERS";
 export const ORDERS_LOADING = "ORDERS_LOADING";
 
 export const AUTHENTICATE = "AUTHENTICATE";
+export const SIGNOUT = "SIGNOUT";

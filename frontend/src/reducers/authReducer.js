@@ -1,4 +1,4 @@
-import {AUTHENTICATE} from "../actions/types";
+import {AUTHENTICATE, SIGNOUT} from "../actions/types";
 
 const initialState = {
     details: {}
@@ -7,6 +7,11 @@ const initialState = {
 export default function (state = initialState, action) {
     switch (action.type) {
         case AUTHENTICATE:
+            return {
+                ...state,
+                auth: action.payload
+            };
+        case SIGNOUT:
             return {
                 ...state,
                 auth: action.payload
