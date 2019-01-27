@@ -1,5 +1,6 @@
 package com.simplepos.backend.security.jwt;
 
+import com.simplepos.backend.controllers.AuthController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,17 +47,19 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-
             String jwt = getJwt(request);
-            if (jwt != null && jwtProvider.validateJwtToken(jwt)) {
-                String username = jwtProvider.getUserNameFromJwtToken(jwt);
+            if (jwt != null && !("".equals(jwt))) {
+                logger.debug("JWT: " + jwt);
+                if (jwtProvider.validateJwtToken(jwt)) {
+                    String username = jwtProvider.getUserNameFromJwtToken(jwt);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication
-                        = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authentication
+                            = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         } catch (Exception e) {
             logger.error("JWT token error.", e);
@@ -71,10 +75,25 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
      * @return If header is present: JWT token string, else: null
      */
     private String getJwt(HttpServletRequest request) {
+
+        //adds cookie token implementation
+        /*
         String authHeader = request.getHeader("Authorization");
-        // TODO: 1/19/19 take token from cookie
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.replace("Bearer ", "");
+        }
+         */
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (AuthController.COOKIE_NAME.equals(cookie.getName())) {
+                    String jwtToken = cookie.getValue();
+                    if (jwtToken != null) {
+                        return jwtToken;
+                    }
+                }
+            }
         }
 
         return null;

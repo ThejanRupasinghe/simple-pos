@@ -25,7 +25,7 @@ public class JwtProvider {
     private String secret;
 
     @Value("${simplepos.jwt.expiration}")
-    private int expiration;
+    private long expiration;
 
     /**
      * Generates JWT token string

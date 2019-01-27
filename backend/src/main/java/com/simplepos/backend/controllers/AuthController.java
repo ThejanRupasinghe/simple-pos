@@ -1,5 +1,6 @@
 package com.simplepos.backend.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.simplepos.backend.details.ResponseDetails;
 import com.simplepos.backend.models.Role;
 import com.simplepos.backend.models.User;
@@ -35,7 +36,11 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+    //cookie name constant
+    public static final String COOKIE_NAME = "simplePOSAuth";
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -57,22 +62,19 @@ public class AuthController {
      * @return
      */
     @PostMapping(path = "/signin", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody SignInDetails loginRequest,
-                                              HttpServletResponse response) {
+    @ResponseBody
+    ResponseEntity<?> authenticateUser(@Valid @RequestBody SignInDetails loginRequest, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtProvider.generateJwtToken(authentication);
 
-        // TODO: 1/19/19 set the JWT in browser cookie
-        Cookie cookie = new Cookie("foo", "bar");
+        // set the JWT in browser cookie
+        Cookie cookie = new Cookie(COOKIE_NAME, jwt);
+        // only server can set/reset
         cookie.setHttpOnly(true);
         cookie.setPath("/api");
         response.addCookie(cookie);
@@ -91,31 +93,33 @@ public class AuthController {
      * @throws Exception
      */
     @PostMapping(path = "/signup", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpDetails signUpRequest, HttpServletRequest request) throws Exception {
-        //username already in database
+    public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpDetails signUpRequest,
+                                               HttpServletRequest request) throws Exception {
+        // username already in database
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             logger.error("Given username already exists. username - " + signUpRequest.getUsername());
-            ResponseDetails responseDetails = new ResponseDetails(new Date(), HttpServletResponse.SC_BAD_REQUEST, "Given username already exists.", "Existing User", request.getRequestURI());
+            ResponseDetails responseDetails = new ResponseDetails(new Date(), HttpServletResponse.SC_BAD_REQUEST,
+                    "Given username already exists.", "Existing User", request.getRequestURI());
             return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.BAD_REQUEST);
         }
 
-        //creates new user account
-        User user = new User(signUpRequest.getName(), signUpRequest.getUsername(), encoder.encode(signUpRequest.getPassword()));
+        // creates new user account
+        User user = new User(signUpRequest.getName(), signUpRequest.getUsername(),
+                encoder.encode(signUpRequest.getPassword()));
 
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
 
-        //adds roles to the account
+        // adds roles to the account
         for (String role : strRoles) {
             if ("admin".equals(role)) {
                 roles.add(Role.ROLE_ADMIN);
             } else if ("user".equals(role)) {
                 roles.add(Role.ROLE_USER);
             } else {
-                //given user role not found in Role enum
+                // given user role not found in Role enum
                 logger.error("Invalid user role " + role);
-                ResponseDetails responseDetails = new ResponseDetails(new Date(),
-                        HttpServletResponse.SC_BAD_REQUEST,
+                ResponseDetails responseDetails = new ResponseDetails(new Date(), HttpServletResponse.SC_BAD_REQUEST,
                         "Given user role not found.", "Invalid role", request.getRequestURI());
                 return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.BAD_REQUEST);
             }
@@ -125,9 +129,29 @@ public class AuthController {
         userRepository.save(user);
 
         logger.info("User saved. username - " + user.getUsername() + ", roles - " + user.getRoles().toString());
-        ResponseDetails responseDetails = new ResponseDetails(new Date(),
-                HttpServletResponse.SC_OK,
+        ResponseDetails responseDetails = new ResponseDetails(new Date(), HttpServletResponse.SC_OK,
                 "User saved successfully.", null, request.getRequestURI());
+        return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.OK);
+    }
+
+    /**
+     * @param request
+     * @param response
+     * @return
+     * @throws JsonProcessingException
+     */
+    @PostMapping(path = "/signout", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    ResponseEntity<String> signOutUser(HttpServletRequest request, HttpServletResponse response)
+            throws JsonProcessingException {
+        Cookie cookie = new Cookie(COOKIE_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/api");
+        response.addCookie(cookie);
+
+        logger.info("Sign Out Success.");
+        ResponseDetails responseDetails = new ResponseDetails(new Date(), HttpServletResponse.SC_OK,
+                "User signout successfully.", null, request.getRequestURI());
         return new ResponseEntity<>(responseDetails.toJsonString(), HttpStatus.OK);
     }
 }
